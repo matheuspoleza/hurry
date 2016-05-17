@@ -4,6 +4,11 @@
 ### Status
 Work in progress
 
+### What is different?
+- Request and response manipulation
+- Flexible template engine, with many supports
+- Asynchronous requests support 
+
 ### Getting started
 
 ```sh
@@ -22,11 +27,6 @@ def hello(req, res):
 if __name__ == '__main__':
   app.run()
 ```
-
-### What is different?
-- Request and response manipulation
-- Flexible template engine, with many supports
-- Asynchronous requests support 
 
 ## License
 MIT
