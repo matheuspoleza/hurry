@@ -1,27 +1,25 @@
-class Router(object):
-"""
+import re
 
-"""
-    routes = {}
+class Router(object):
+    routes = ()
 
     def __init__(self, routes=None):
-        if isinstance(routes, dict):
-            for route in routes:
-                self.add_route(route)
+        self.routes = routes
 
-    def add_route(self, route):
-        self.routes[url] = handler
+    def add_route(self, url, method, handler):
+        self.routes += (
+            Route(url, method, handler),
+        )
+        print(self.routes)
 
-    def find_route(self, path):
+    def find_route(self, method, url):
         for route in self.routes:
-            match = re.search(route.regex_pattern, path)
-            if match:
+            if(route.method == method and route.url == url):
                 return route
         return None
 
-
 class Route(object):
-    def __init__(self, url, method, handler)
+    def __init__(self, url, method, handler):
         self.url = url
+        self.method = method
         self.handler = handler
-        self.regex_pattern = self.generate_regex_pattern()

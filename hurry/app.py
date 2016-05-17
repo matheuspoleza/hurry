@@ -1,15 +1,22 @@
-from webob import Request, Response
+from webob                 import Request, Response
 from wsgiref.simple_server import make_server
+from hurry.routing         import Router
+from hurry.http            import Response, Request
+import json
 
 class Hurry(object):
-    def __init__(self, routes=None):
-        self.routes = routes
+    def __init__(self, routes=()):
+        self.router = Router(routes)
 
     def __call__(self, environ, start_response):
-        req = Request(environ)
-        res = Response()
-        res.write('Hello World')
-        return res(environ, start_response)
+        self.request = Request(environ)
+        self.response = Response()
+        path = self.request.path_info
+        method = self.request.method
+        route = self.router.find_route(method, path)
+        if(route):
+            route.handler(self.request, self.response)
+        return self.response(environ, start_response)
 
     def run(self, host=None, port=None):
         host = '127.0.0.1'
@@ -17,17 +24,28 @@ class Hurry(object):
         server = make_server(host, port, self)
         server.serve_forever()
 
-    def static(self, url=None, path=None):
-        Static.serve(url, path)
+    def get(self,url):
+        def decorator(f):
+            self.router.add_route(url, 'GET', f)
+        return decorator
 
-    def get(self, url, handler):
-        Router.add_route(url, 'GET', handler)
+    def post(self,url):
+        def decorator(f):
+            self.router.add_route(url, 'POST', f)
+        return decorator
 
-    def post(self, url, handler):
-        Router.add_route(url, 'POST', handler)
+    def put(self,url):
+        def decorator(f):
+            self.router.add_route(url, 'PUT', f)
+        return decorator
 
-    def put(self, url, handler):
-        Router.add_route(url, 'PUT', handler)
+    def delete(self,url):
+        def decorator(f):
+            self.router.add_route(url, 'DELETE', f)
+        return decorator
 
-    def delete(self, url, handler):
-        Router.add_route(url, 'DELETE', handler)
+class Route(object):
+    def __init__(self, url, method, handler):
+        self.url = url
+        self.method = method
+        self.handler = handler
