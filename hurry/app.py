@@ -1,7 +1,8 @@
+# -*- coding: utf-8 -*-
 from webob                 import Request, Response
 from wsgiref.simple_server import make_server
 from hurry.routing         import Router
-from hurry.http            import Response, Request
+from hurry.http            import RequestHandler, Response, Request
 import json
 
 class Hurry(object):
@@ -11,18 +12,22 @@ class Hurry(object):
     def __call__(self, environ, start_response):
         self.request = Request(environ)
         self.response = Response()
+        request_handler = RequestHandler(self.response)
         path = self.request.path_info
         method = self.request.method
         route = self.router.find_route(method, path)
         if(route):
-            route.handler(self.request, self.response)
-        return self.response(environ, start_response)
+            route.handler(self.request, request_handler)
+        return request_handler.response(environ, start_response)
 
     def run(self, host=None, port=None):
         host = '127.0.0.1'
         port = 9000
         server = make_server(host, port, self)
         server.serve_forever()
+
+    def set(self):
+        pass
 
     def get(self,url):
         def decorator(f):
