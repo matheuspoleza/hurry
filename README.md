@@ -1,5 +1,5 @@
 # hurry
-> A flexible and quickly Python Micro Web Framework. Inspired in ExpressJS
+> A flexible and quickly Python Micro Web Framework
 
 ### Status
 Work in progress
